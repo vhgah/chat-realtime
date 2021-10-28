@@ -6,10 +6,10 @@ const Chatroom = () => {
   return (
     <>
       <Row>
-        <Col span={6}>
+        <Col span={8}>
           <Sidebar />
         </Col>
-        <Col span={18}>
+        <Col span={16}>
           <ChatWindow />
         </Col>
       </Row>

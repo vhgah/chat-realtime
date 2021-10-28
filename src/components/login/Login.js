@@ -1,24 +1,25 @@
 import { Button, Col, Row, Typography } from "antd";
-import firebase, { auth, db } from "../firebase/Config";
+import firebase, { auth } from "../firebase/Config";
+import { addDocument, generateKeywords } from "../firebase/Services";
+import { GoogleOutlined, FacebookOutlined } from "@ant-design/icons";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const fbProvider = new firebase.auth.FacebookAuthProvider();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 const Login = () => {
-  const handleLogin = async () => {
-    const { additionalUserInfo, user } = await auth.signInWithPopup(
-      googleProvider
-    );
+  const handleLogin = async (provider) => {
+    const { additionalUserInfo, user } = await auth.signInWithPopup(provider);
 
     if (additionalUserInfo?.isNewUser) {
-      db.collection("users").add({
+      addDocument("users", {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
         uid: user.uid,
         providerId: additionalUserInfo.providerId,
+        keyword: generateKeywords(user.displayName),
       });
     }
   };
@@ -27,15 +28,25 @@ const Login = () => {
     <div style={{ textAlign: "center" }}>
       <Row justify="center" style={{ height: 800 }}>
         <Col span={8}>
-          <Title>Bo em hut</Title>
+          <Title>Chat App</Title>
+          <Text
+            style={{ textAlign: "center", display: "block", marginBottom: 5 }}
+          >
+            Đăng nhập
+          </Text>
           <Button
             style={{ width: "100%", marginBottom: "5px" }}
-            onClick={handleLogin}
+            onClick={() => handleLogin(fbProvider)}
+            icon={<FacebookOutlined />}
           >
-            Đăng nhập bằng Facebook
+            Facebook
           </Button>
-          <Button style={{ width: "100%" }} onClick={handleLogin}>
-            Đăng nhập bằng Google
+          <Button
+            style={{ width: "100%" }}
+            onClick={() => handleLogin(googleProvider)}
+            icon={<GoogleOutlined />}
+          >
+            Google
           </Button>
         </Col>
       </Row>
